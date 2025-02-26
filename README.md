@@ -28,16 +28,20 @@ Principais Funcionalidades
 Como executar:
 
 1. Clone este repositório
+
   git clone https://github.com/seu-usuario/MapeamentoSolidario.git
   cd MapeamentoSolidario
   
 2. Insale as dependências
+
   npm install
 
 3. Inicie o servidor backend (Kotlin + Spring Boot)
-  ./gradlew bootRun
+
+   ./gradlew bootRun
 
 4. Inicie o front
+
    npx expo start
 
 
