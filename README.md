@@ -16,8 +16,12 @@ APIs: Google Maps API (para geolocalização e exibição no mapa)
 Principais Funcionalidades
 
 ✅ Login e cadastro de usuários autenticados (prefeitura e ONGs)
+
 ✅ Exibição de mapa interativo com pontos cadastrados
+
 ✅ Registro de novos pontos de aglomeração de moradores de rua
+
 ✅ Consulta e gerenciamento de abrigos públicos disponíveis
+
 ✅ Segurança reforçada com autenticação JWT
 
