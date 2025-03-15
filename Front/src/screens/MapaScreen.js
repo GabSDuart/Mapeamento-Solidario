@@ -1,45 +1,35 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import MapView, { Marker } from 'react-native-maps';
-import { GOOGLE_MAPS_API_KEY } from '@env';
 
 const MapaScreen = () => {
   const [pontos, setPontos] = useState([]);
 
-  // Coordenadas iniciais do mapa (Novas coordenadas fornecidas)
-  const initialRegion = {
-    latitude: -31.769926, // Latitude fornecida
-    longitude: -52.341109, // Longitude fornecida
-    latitudeDelta: 0.01, // Zoom mais próximo
-    longitudeDelta: 0.01, // Zoom mais próximo
-  };
-
-  // Simulação de dados da API
+  // Busca os pontos do backend
   useEffect(() => {
-    // Substitua isso pela chamada real à sua API
-    const fakeData = [
-      {
-        id: '1',
-        descricao: 'Local Principal',
-        latitude: -31.769926, // Latitude fornecida
-        longitude: -52.341109, // Longitude fornecida
-      },
-      {
-        id: '2',
-        descricao: 'Ponto Próximo',
-        latitude: -31.7705, // Um ponto próximo
-        longitude: -52.3420,
-      },
-    ];
-    setPontos(fakeData);
+    const fetchPontos = async () => {
+      try {
+        const response = await fetch('http://localhost:8080/api/pontos');
+        const data = await response.json();
+        setPontos(data);
+      } catch (error) {
+        console.error('Erro ao buscar pontos:', error);
+      }
+    };
+
+    fetchPontos();
   }, []);
 
   return (
     <View style={styles.container}>
       <MapView
         style={styles.map}
-        initialRegion={initialRegion}
-        provider="google" // Usa o Google Maps como provedor
+        initialRegion={{
+          latitude: -31.769926, // Coordenadas iniciais (ex: Pelotas, RS)
+          longitude: -52.341109,
+          latitudeDelta: 0.01,
+          longitudeDelta: 0.01,
+        }}
       >
         {pontos.map((ponto) => (
           <Marker

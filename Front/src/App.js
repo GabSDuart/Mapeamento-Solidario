@@ -6,6 +6,7 @@ import { AuthProvider, AuthContext } from './contexts/AuthContext'; // Importe o
 import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen';
 import MapaScreen from './screens/MapaScreen';
+import AddPontoScreen from './screens/AddPontoScreen'; // Importe a tela de cadastro de pontos
 
 const Stack = createStackNavigator();
 
@@ -34,6 +35,11 @@ const AppNavigator = () => {
               name="Mapa"
               component={MapaScreen}
               options={{ title: 'Mapa' }}
+            />
+            <Stack.Screen
+              name="AddPonto"
+              component={AddPontoScreen}
+              options={{ title: 'Cadastrar Ponto' }}
             />
           </>
         ) : (
