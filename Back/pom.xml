@@ -1,45 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- Informações básicas do projeto -->
+    <groupId>com.mapeamento</groupId>
+    <artifactId>backend</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <!-- Configurações do Spring Boot -->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.0</version> <!-- Use a versão mais recente do Spring Boot -->
-        <relativePath/> <!-- Busca o parent no repositório -->
+        <version>2.7.0</version> <!-- Versão do Spring Boot -->
+        <relativePath/> <!-- Lookup parent from repository -->
     </parent>
 
-    <groupId>com.example</groupId>
-    <artifactId>mapeamento-solidario-back</artifactId>
-    <version>1.0.0</version>
-    <packaging>jar</packaging>
-
     <properties>
-        <java.version>23</java.version> <!-- Defina a versão do Java -->
+        <java.version>17</java.version> <!-- Versão do Java -->
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
     </properties>
 
     <dependencies>
+        <!-- Spring Boot Starter Web (para endpoints RESTful) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+
+        <!-- Spring Data MongoDB (para integração com o MongoDB) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-mongodb</artifactId>
         </dependency>
+
+        <!-- Spring Boot Starter Security (opcional, para autenticação) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+        <!-- Validação de dados (para validações como @NotNull, @Email, etc.) -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <!-- Spring Boot Starter Test (para testes) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- MongoDB Java Driver (já incluído no spring-boot-starter-data-mongodb, mas pode ser útil para versões específicas) -->
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongodb-driver-sync</artifactId>
+        </dependency>
+
+        <!-- Lombok (opcional, para reduzir boilerplate code) -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
         <plugins>
+            <!-- Plugin do Spring Boot para empacotar o projeto como um JAR executável -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+
+            <!-- Plugin do Maven Compiler para garantir a compatibilidade com Java 17 -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                </configuration>
             </plugin>
         </plugins>
     </build>
