@@ -8,7 +8,7 @@ const HomeScreen = ({ navigation }) => {
       style={styles.background}
     >
       <View style={styles.container}>
-        <Text style={styles.title}>Mapeamento Solidário</Text>
+        <Text style={styles.title}>Acolhe+</Text>
         <Text style={styles.subtitle}>Conectando pessoas e lugares</Text>
         <TouchableOpacity
           style={styles.button}
