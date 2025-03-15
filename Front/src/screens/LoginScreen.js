@@ -1,6 +1,6 @@
 import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from 'react-native';
-import { AuthContext } from '../contexts/AuthContext'; // Importe o contexto
+import { AuthContext } from '../contexts/AuthContext'; // Importe o contexto de autenticação
 
 const LoginScreen = ({ navigation }) => {
   const [usuario, setUsuario] = useState(''); // Armazena e-mail ou CPF
