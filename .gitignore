@@ -18,4 +18,4 @@ build/
 Thumbs.db
 
 #Ignorar app properties
-application.properties
+aplication.properties
