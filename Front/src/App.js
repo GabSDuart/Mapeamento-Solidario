@@ -7,6 +7,7 @@ import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen';
 import MapaScreen from './screens/MapaScreen';
 import AddPontoScreen from './screens/AddPontoScreen'; // Importe a tela de cadastro de pontos
+import EditPontoScreen from './screens/EditPontoScreen'; // Importe a tela de edição de pontos
 
 const Stack = createStackNavigator();
 
@@ -40,6 +41,11 @@ const AppNavigator = () => {
               name="AddPonto"
               component={AddPontoScreen}
               options={{ title: 'Cadastrar Ponto' }}
+            />
+            <Stack.Screen
+              name="EditPonto"
+              component={EditPontoScreen}
+              options={{ title: 'Editar Ponto' }}
             />
           </>
         ) : (
