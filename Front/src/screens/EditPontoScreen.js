@@ -1,109 +1,124 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
-import { useNavigation, useRoute } from '@react-navigation/native';
-import firestore from '@react-native-firebase/firestore';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import MapView, { Marker } from 'react-native-maps';
 
-const EditPontoScreen = () => {
-  const navigation = useNavigation();
-  const route = useRoute();
-  const { pontoId } = route.params; // Recebe o ID do ponto selecionado
-  const [nome, setNome] = useState('');
-  const [descricao, setDescricao] = useState('');
+const EditPontoScreen = ({ navigation, route }) => {
+  const [point, setPoint] = useState(null);
 
   useEffect(() => {
-    const carregarDados = async () => {
-      try {
-        const doc = await firestore().collection('pontos').doc(pontoId).get();
-        if (doc.exists) {
-          const data = doc.data();
-          setNome(data.nome);
-          setDescricao(data.descricao);
-        }
-      } catch (error) {
-        Alert.alert('Erro', 'Não foi possível carregar os dados do ponto.');
-      }
-    };
+    fetchPointDetails();
+  }, []);
 
-    carregarDados();
-  }, [pontoId]);
-
-  const handleSalvar = async () => {
+  const fetchPointDetails = async () => {
     try {
-      await firestore().collection('pontos').doc(pontoId).update({
-        nome,
-        descricao,
-      });
-      Alert.alert('Sucesso', 'Ponto atualizado com sucesso!');
-      navigation.goBack();
+      // TODO: Replace with actual API call
+      const response = await fetch(`YOUR_API_ENDPOINT/points/${route.params.id}`);
+      const data = await response.json();
+      setPoint(data);
     } catch (error) {
-      Alert.alert('Erro', 'Não foi possível atualizar o ponto.');
+      console.error('Error fetching point details:', error);
     }
   };
 
-  const handleExcluir = async () => {
-    Alert.alert(
-      'Confirmação',
-      'Tem certeza de que deseja excluir este ponto?',
-      [
-        { text: 'Cancelar', style: 'cancel' },
-        {
-          text: 'Excluir',
-          style: 'destructive',
-          onPress: async () => {
-            try {
-              await firestore().collection('pontos').doc(pontoId).delete();
-              Alert.alert('Sucesso', 'Ponto excluído com sucesso!');
-              navigation.goBack();
-            } catch (error) {
-              Alert.alert('Erro', 'Não foi possível excluir o ponto.');
-            }
-          },
-        },
-      ]
+  if (!point) {
+    return (
+      <View style={styles.container}>
+        <Text>Carregando...</Text>
+      </View>
     );
-  };
+  }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.label}>Nome do Ponto:</Text>
-      <TextInput
-        style={styles.input}
-        value={nome}
-        onChangeText={setNome}
-        placeholder="Digite o nome do ponto"
-      />
+    <ScrollView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>{point.name}</Text>
+      </View>
 
-      <Text style={styles.label}>Descrição:</Text>
-      <TextInput
-        style={styles.input}
-        value={descricao}
-        onChangeText={setDescricao}
-        placeholder="Digite a descrição"
-      />
+      <View style={styles.content}>
+        <View style={styles.mapContainer}>
+          <MapView
+            style={styles.map}
+            initialRegion={{
+              latitude: point.latitude,
+              longitude: point.longitude,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+          >
+            <Marker
+              coordinate={{
+                latitude: point.latitude,
+                longitude: point.longitude,
+              }}
+            />
+          </MapView>
+        </View>
 
-      <Button title="Salvar Alterações" onPress={handleSalvar} />
-      <Button title="Excluir Ponto" onPress={handleExcluir} color="red" />
-    </View>
+        <View style={styles.detailsContainer}>
+          <Text style={styles.sectionTitle}>Descrição</Text>
+          <Text style={styles.description}>{point.description}</Text>
+        </View>
+
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => navigation.navigate('Map')}
+        >
+          <Text style={styles.buttonText}>Voltar ao Mapa</Text>
+        </TouchableOpacity>
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#FFF',
+  },
+  header: {
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#4CAF50',
   },
-  label: {
-    fontSize: 16,
+  title: {
+    fontSize: 24,
     fontWeight: 'bold',
-    marginTop: 10,
+    color: '#FFF',
   },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 5,
+  content: {
+    padding: 20,
+  },
+  mapContainer: {
+    height: 200,
+    marginBottom: 20,
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  map: {
+    flex: 1,
+  },
+  detailsContainer: {
+    marginBottom: 20,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  description: {
+    fontSize: 16,
+    color: '#666',
+    lineHeight: 24,
+  },
+  button: {
+    backgroundColor: '#4CAF50',
+    padding: 15,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  buttonText: {
+    color: '#FFF',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 

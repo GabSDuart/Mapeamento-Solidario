@@ -4,15 +4,17 @@ import { View, Text, ImageBackground, StyleSheet, TouchableOpacity } from 'react
 const HomeScreen = ({ navigation }) => {
   return (
     <ImageBackground
-      source={require('./assets/background.jpg')} // Substitua pelo caminho da sua imagem
+      source={require('../../assets/background.jpg')}
       style={styles.background}
+      resizeMode="cover"
     >
       <View style={styles.container}>
         <Text style={styles.title}>Acolhe+</Text>
         <Text style={styles.subtitle}>Conectando pessoas e lugares</Text>
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate('Login')}
+          onPress={() => navigation?.navigate('Login')}
+          accessibilityLabel="Botão para iniciar o aplicativo e acessar a tela de login"
         >
           <Text style={styles.buttonText}>Começar</Text>
         </TouchableOpacity>
@@ -24,14 +26,12 @@ const HomeScreen = ({ navigation }) => {
 const styles = StyleSheet.create({
   background: {
     flex: 1,
-    resizeMode: 'cover',
-    justifyContent: 'center',
   },
   container: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Fundo escurecido para melhorar a legibilidade
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   title: {
     fontSize: 32,
