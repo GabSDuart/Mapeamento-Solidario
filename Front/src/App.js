@@ -1,66 +1,69 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { ActivityIndicator, View } from 'react-native';
-import { AuthProvider, AuthContext } from './contexts/AuthContext'; // Importe o AuthProvider e AuthContext
+import { AuthProvider, AuthContext } from './contexts/AuthContext';
 import HomeScreen from './screens/HomeScreen';
 import LoginScreen from './screens/LoginScreen';
 import MapaScreen from './screens/MapaScreen';
-import AddPontoScreen from './screens/AddPontoScreen'; // Importe a tela de cadastro de pontos
-import EditPontoScreen from './screens/EditPontoScreen'; // Importe a tela de edição de pontos
+import AddPontoScreen from './screens/AddPontoScreen';
+import EditPontoScreen from './screens/EditPontoScreen';
+import * as Location from 'expo-location';
+import axios from 'axios';
 
 const Stack = createStackNavigator();
 
-// Componente para verificar o estado de carregamento
 const AppLoading = () => (
   <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
     <ActivityIndicator size="large" color="#1E90FF" />
   </View>
 );
 
-// Componente principal da navegação
-const AppNavigator = () => {
-  const { userToken, isLoading } = useContext(AuthContext); // Use o contexto de autenticação
-
-  if (isLoading) {
-    return <AppLoading />; // Exibe um indicador de carregamento enquanto verifica o login
+const sendLocationPeriodically = async (token) => {
+  let { status } = await Location.requestForegroundPermissionsAsync();
+  if (status !== 'granted') {
+    console.log('Permissão de localização negada');
+    return;
   }
+
+  setInterval(async () => {
+    let location = await Location.getCurrentPositionAsync({});
+    try {
+      await axios.post(
+        'http://localhost:8080/api/tracker',
+        { latitude: location.coords.latitude, longitude: location.coords.longitude },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+    } catch (error) {
+      console.error('Erro ao enviar localização:', error);
+    }
+  }, 5 * 60 * 1000); // a cada 5 minutos (ajustável)
+};
+
+const AppNavigator = () => {
+  const { userToken, isLoading } = useContext(AuthContext);
+
+  useEffect(() => {
+    if (userToken) {
+      sendLocationPeriodically(userToken);
+    }
+  }, [userToken]);
+
+  if (isLoading) return <AppLoading />;
 
   return (
     <NavigationContainer>
       <Stack.Navigator>
         {userToken ? (
-          // Telas acessíveis apenas para usuários logados
           <>
-            <Stack.Screen
-              name="Mapa"
-              component={MapaScreen}
-              options={{ title: 'Mapa' }}
-            />
-            <Stack.Screen
-              name="AddPonto"
-              component={AddPontoScreen}
-              options={{ title: 'Cadastrar Ponto' }}
-            />
-            <Stack.Screen
-              name="EditPonto"
-              component={EditPontoScreen}
-              options={{ title: 'Editar Ponto' }}
-            />
+            <Stack.Screen name="Mapa" component={MapaScreen} options={{ title: 'Mapa' }} />
+            <Stack.Screen name="AddPonto" component={AddPontoScreen} options={{ title: 'Cadastrar Ponto' }} />
+            <Stack.Screen name="EditPonto" component={EditPontoScreen} options={{ title: 'Editar Ponto' }} />
           </>
         ) : (
-          // Telas acessíveis para usuários não logados
           <>
-            <Stack.Screen
-              name="Home"
-              component={HomeScreen}
-              options={{ headerShown: false }} // Oculta o cabeçalho na HomeScreen
-            />
-            <Stack.Screen
-              name="Login"
-              component={LoginScreen}
-              options={{ title: 'Login' }} // Título da tela de Login
-            />
+            <Stack.Screen name="Home" component={HomeScreen} options={{ headerShown: false }} />
+            <Stack.Screen name="Login" component={LoginScreen} options={{ title: 'Login' }} />
           </>
         )}
       </Stack.Navigator>
@@ -68,13 +71,10 @@ const AppNavigator = () => {
   );
 };
 
-// Componente principal do app
-const App = () => {
-  return (
-    <AuthProvider>
-      <AppNavigator />
-    </AuthProvider>
-  );
-};
+const App = () => (
+  <AuthProvider>
+    <AppNavigator />
+  </AuthProvider>
+);
 
 export default App;

@@ -8,12 +8,9 @@ import java.util.List;
 
 @Repository
 public interface PontoRepository extends MongoRepository<Ponto, String> {
-    // Métodos padrão do MongoRepository já estão disponíveis:
-    // - save(), findById(), findAll(), deleteById(), etc.
-
-    // Exemplo de método personalizado para buscar pontos por descrição
+    // Buscar pontos por descrição
     List<Ponto> findByDescricao(String descricao);
 
-    // Exemplo de método personalizado para buscar pontos por latitude e longitude
+    // Buscar pontos por coordenadas
     List<Ponto> findByLatitudeAndLongitude(double latitude, double longitude);
 }

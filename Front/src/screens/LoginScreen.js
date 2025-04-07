@@ -1,9 +1,14 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, ActivityIndicator } from 'react-native';
-import { AuthContext } from '../contexts/AuthContext'; // Importa o contexto de autenticação
+import {
+  View, Text, TextInput, TouchableOpacity, StyleSheet,
+  Alert, ActivityIndicator
+} from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { AuthContext } from '../contexts/AuthContext';
+import api from '../services/api'; // importa API com JWT
 
 const LoginScreen = ({ navigation }) => {
-  const { login } = useContext(AuthContext); // Função de login do contexto
+  const { login } = useContext(AuthContext);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -16,14 +21,18 @@ const LoginScreen = ({ navigation }) => {
 
     setLoading(true);
     try {
-      const success = await login(email, password); // Chama a função de login do contexto
-      if (success) {
-        navigation.navigate('Mapa'); // Redireciona para a tela principal
+      const response = await api.post('/auth/login', { email, password });
+      const token = response.data.token;
+
+      if (token) {
+        await AsyncStorage.setItem('userToken', token);
+        login(token); // atualiza contexto
+        navigation.navigate('Mapa');
       } else {
-        Alert.alert('Erro', 'Credenciais inválidas.');
+        Alert.alert('Erro', 'Token inválido.');
       }
     } catch (error) {
-      Alert.alert('Erro', 'Ocorreu um problema ao tentar fazer login.');
+      Alert.alert('Erro', 'Credenciais inválidas ou servidor indisponível.');
       console.error('Login error:', error);
     } finally {
       setLoading(false);
@@ -69,47 +78,31 @@ const LoginScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    padding: 20,
-    backgroundColor: '#FFF',
+    flex: 1, justifyContent: 'center', padding: 20, backgroundColor: '#FFF',
   },
   title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 40,
-    color: '#4CAF50',
+    fontSize: 32, fontWeight: 'bold', textAlign: 'center',
+    marginBottom: 40, color: '#4CAF50',
   },
   inputContainer: {
     marginBottom: 20,
   },
   input: {
-    borderWidth: 1,
-    borderColor: '#DDD',
-    borderRadius: 8,
-    padding: 15,
-    marginBottom: 15,
-    fontSize: 16,
+    borderWidth: 1, borderColor: '#DDD', borderRadius: 8,
+    padding: 15, marginBottom: 15, fontSize: 16,
   },
   button: {
-    backgroundColor: '#4CAF50',
-    padding: 15,
-    borderRadius: 8,
-    alignItems: 'center',
+    backgroundColor: '#4CAF50', padding: 15,
+    borderRadius: 8, alignItems: 'center',
   },
   buttonText: {
-    color: '#FFF',
-    fontSize: 18,
-    fontWeight: 'bold',
+    color: '#FFF', fontSize: 18, fontWeight: 'bold',
   },
   registerLink: {
-    marginTop: 20,
-    alignItems: 'center',
+    marginTop: 20, alignItems: 'center',
   },
   registerText: {
-    color: '#4CAF50',
-    fontSize: 16,
+    color: '#4CAF50', fontSize: 16,
   },
 });
 

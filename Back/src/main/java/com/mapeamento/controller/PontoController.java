@@ -18,29 +18,26 @@ public class PontoController {
         this.service = service;
     }
 
-    // Endpoint de login
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody Usuario usuario) {
-        if (service.autenticarUsuario(usuario)) {
-            return ResponseEntity.ok("Login bem-sucedido!");
+        String token = service.autenticarUsuario(usuario);
+        if (token != null) {
+            return ResponseEntity.ok(token);
         } else {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciais inválidas.");
         }
     }
 
-    // Endpoint para listar pontos
     @GetMapping("/pontos")
     public List<Ponto> listarPontos() {
         return service.listarPontos();
     }
 
-    // Endpoint para cadastrar ponto
     @PostMapping("/pontos")
     public Ponto cadastrarPonto(@RequestBody Ponto ponto) {
-        return service.salvarPonto(ponto);
+        return service.cadastrarPonto(ponto);
     }
 
-    // Endpoint para recuperar senha (opcional)
     @PostMapping("/recuperar-senha")
     public ResponseEntity<String> recuperarSenha(@RequestBody String email) {
         if (service.enviarEmailRecuperacao(email)) {

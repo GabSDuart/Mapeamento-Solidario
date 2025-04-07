@@ -1,45 +1,47 @@
 import React, { createContext, useState, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import api from '../services/api'; // Importa a instância do axios
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [userToken, setUserToken] = useState(null); // Armazena o token do usuário
-  const [isLoading, setIsLoading] = useState(true); // Controla o estado de carregamento
+  const [userToken, setUserToken] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Função para fazer login
   const login = async (token) => {
     try {
-      await AsyncStorage.setItem('userToken', token); // Salva o token no AsyncStorage
-      setUserToken(token); // Atualiza o estado do token
+      await AsyncStorage.setItem('userToken', token);
+      setUserToken(token);
+      api.defaults.headers.common['Authorization'] = `Bearer ${token}`; // Define o token global no axios
     } catch (error) {
       console.error('Erro ao salvar o token:', error);
     }
   };
 
-  // Função para fazer logout
   const logout = async () => {
     try {
-      await AsyncStorage.removeItem('userToken'); // Remove o token do AsyncStorage
-      setUserToken(null); // Atualiza o estado do token
+      await AsyncStorage.removeItem('userToken');
+      setUserToken(null);
+      delete api.defaults.headers.common['Authorization']; // Remove o token global do axios
     } catch (error) {
       console.error('Erro ao remover o token:', error);
     }
   };
 
-  // Verifica se o usuário já está logado ao carregar o app
   const checkLogin = async () => {
     try {
-      const token = await AsyncStorage.getItem('userToken'); // Recupera o token
-      setUserToken(token); // Atualiza o estado do token
+      const token = await AsyncStorage.getItem('userToken');
+      setUserToken(token);
+      if (token) {
+        api.defaults.headers.common['Authorization'] = `Bearer ${token}`; // Redefine o token no axios ao abrir o app
+      }
     } catch (error) {
       console.error('Erro ao verificar o login:', error);
     } finally {
-      setIsLoading(false); // Finaliza o carregamento
+      setIsLoading(false);
     }
   };
 
-  // Executa a verificação de login ao montar o componente
   useEffect(() => {
     checkLogin();
   }, []);
